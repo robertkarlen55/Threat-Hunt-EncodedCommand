@@ -5,7 +5,7 @@
 
 ---
 
-## Scenario Creation
+## [Scenario Creation](https://github.com/robertkarlen55/Threat-Hunt-Suspicious-Powershell-Activity/blob/main/Threat%20Hunt%20Suspicious%20Powershell%20Acticity%20Creation)
 
 **Platforms and Languages Leveraged:**
 - **Windows 10 Virtual Machine (Local or Microsoft Azure)**
