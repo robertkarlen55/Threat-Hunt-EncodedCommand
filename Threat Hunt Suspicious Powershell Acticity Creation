@@ -1,98 +1,98 @@
 
-# Recreate the Suspicious PowerShell Threat Hunt Scenario
+# How to Recreate the PowerShell Threat Hunt Scenario
 
-These step-by-step instructions will help you replicate the PowerShell threat hunt scenario detailed in the "Threat Hunt Report: Suspicious PowerShell Activity."
-
----
-
-## ⚙️ Requirements
-
-- Windows 10 Virtual Machine (local or cloud, e.g., Azure)
-- PowerShell 5.1 or later
-- Internet connection (for simulated web request)
-- Admin privileges on the VM
-- Microsoft Defender for Endpoint (optional, for telemetry collection)
-- Access to run Kusto Query Language (KQL) queries in Defender or Sentinel
+This guide walks through the steps required to replicate the Suspicious PowerShell Activity threat hunt scenario described in the report.
 
 ---
 
-## 🔧 Step-by-Step Instructions
+## 🧰 Prerequisites
 
-### 1. Open Notepad and Create the PowerShell Script
+- A Windows 10 Virtual Machine (local or in Azure)
+- PowerShell 5.1 or higher
+- Local admin rights on the VM
+- Internet access
+- (Optional) Microsoft Defender for Endpoint or Sentinel for KQL telemetry review
 
-1. Open Notepad.
-2. Paste this content:
+---
+
+## 🛠️ Step-by-Step Scenario Creation
+
+### Step 1: Create the PowerShell Script
+
+1. Open **Notepad**.
+2. Paste the following line:
     ```powershell
     Start-Process "calc.exe"
     ```
-3. Save the file with:
-   - **File name:** `open_calc.ps1`
-   - **Save as type:** `All Files`
-   - **Location:** `C:\Users\<YourUsername>\Downloads`
+3. Save the file:
+    - File name: `open_calc.ps1`
+    - Save as type: `All Files`
+    - Location: `C:\Users\<YourUsername>\Downloads`
 
 ---
 
-### 2. Execute the Script via PowerShell
+### Step 2: Execute the Script with PowerShell
 
-1. Open PowerShell **as Administrator**.
-2. Run the following:
+1. Open PowerShell as Administrator.
+2. Run the script:
     ```powershell
     powershell -ExecutionPolicy Bypass -File "C:\Users\<YourUsername>\Downloads\open_calc.ps1"
     ```
 
 ---
 
-### 3. Encode the Command and Run It Obfuscated
+### Step 3: Encode and Execute the Command Obfuscated
 
-1. In PowerShell, run:
+1. In PowerShell:
     ```powershell
     $command = 'Start-Process "calc.exe"'
     $bytes = [System.Text.Encoding]::Unicode.GetBytes($command)
     $encoded = [Convert]::ToBase64String($bytes)
     ```
-2. Copy the Base64 string output.
-3. Run the encoded command:
+2. Use the encoded output in this command:
     ```powershell
-    powershell -NoProfile -ExecutionPolicy Bypass -EncodedCommand <your_base64_string>
+    powershell -NoProfile -ExecutionPolicy Bypass -EncodedCommand <Base64Output>
     ```
 
 ---
 
-### 4. Generate Simulated Network Activity
+### Step 4: Simulate Network Activity
 
-Run this harmless command to simulate external network behavior:
-```powershell
-Invoke-WebRequest -Uri "https://example.com" -UseBasicParsing
-```
+1. Run the following command to simulate outbound traffic:
+    ```powershell
+    Invoke-WebRequest -Uri "https://example.com" -UseBasicParsing
+    ```
 
 ---
 
-## 🔍 Optional: Verify with Defender for Endpoint (MDE)
+## 🔎 Detection Using KQL (Optional in MDE/Sentinel)
 
-Use the following KQL queries in the **Microsoft 365 Defender Portal** or **Microsoft Sentinel**:
+### Detect Script File Creation
 
-### Find Script File Creation
 ```kusto
 DeviceFileEvents
 | where FileName endswith ".ps1"
 | where FolderPath has_any("Downloads", "Desktop", "Temp", "Public")
 ```
 
-### Find PowerShell Script Execution
+### Detect PowerShell Script Execution
+
 ```kusto
 DeviceProcessEvents
 | where FileName =~ "powershell.exe"
 | where ProcessCommandLine has ".ps1"
 ```
 
-### Find EncodedCommand Execution
+### Detect Encoded PowerShell Usage
+
 ```kusto
 DeviceProcessEvents
 | where FileName =~ "powershell.exe"
 | where ProcessCommandLine contains "-EncodedCommand"
 ```
 
-### Find Network Events from PowerShell
+### Detect PowerShell-Initiated Network Connections
+
 ```kusto
 DeviceNetworkEvents
 | where InitiatingProcessFileName =~ "powershell.exe"
@@ -100,6 +100,6 @@ DeviceNetworkEvents
 
 ---
 
-## ✅ That's it!
+## ✅ Scenario Complete
 
-You've now successfully recreated the scenario and generated valid logs for detection testing or analyst training.
+This will safely simulate a PowerShell-based attack pattern for threat hunting practice or detection validation. No malicious actions are performed.
